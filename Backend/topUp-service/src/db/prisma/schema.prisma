@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
+  url      = env("DATABASE_URL")
 }
 
 model User {

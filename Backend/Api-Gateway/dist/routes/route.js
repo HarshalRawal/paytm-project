@@ -11,11 +11,25 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.topUpProxy = void 0;
 const http_proxy_middleware_1 = require("http-proxy-middleware");
+// Define the proxy middleware
 exports.topUpProxy = (0, http_proxy_middleware_1.createProxyMiddleware)({
-    target: 'http://localhost:3001', // Replace with the actual Top-Up Service URL
+    target: 'http://localhost:3001/', // Replace with the actual Top-Up Service URL
     changeOrigin: true,
-    selfHandleResponse: true, // Important: Ensures that the proxy doesn't automatically handle the response
+    selfHandleResponse: true, // Ensure we handle the response manually
     on: {
+        proxyReq: (proxyReq, req) => {
+            console.log("Request received in API Gateway:", req.body);
+            console.log("Forwarding request to Top-Up Service");
+            // Ensure that the proxy request forwards the body correctly
+            if (req.body) {
+                const bodyData = JSON.stringify(req.body);
+                // Update the headers in the proxy request
+                proxyReq.setHeader('Content-Type', 'application/json');
+                proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+                // Write the body to the proxy request
+                proxyReq.write(bodyData);
+            }
+        },
         proxyRes: (proxyRes, req, res) => __awaiter(void 0, void 0, void 0, function* () {
             let body = []; // Use Uint8Array to handle binary data
             // Collect the response data from the Top-Up Service
@@ -31,12 +45,12 @@ exports.topUpProxy = (0, http_proxy_middleware_1.createProxyMiddleware)({
                     const responseJson = JSON.parse(responseData);
                     // Log the response for debugging
                     console.log("Response from Top-Up Service:", responseJson);
-                    // Send the final response back to the client through the API Gateway
-                    res.status((_a = proxyRes.statusCode) !== null && _a !== void 0 ? _a : 200).json({
-                        transactionId: responseJson.transactionId,
-                        message: responseJson.message,
-                        status: "processed" // You can customize the status based on your use case
+                    // Copy response headers from the proxy response to the client response
+                    Object.keys(proxyRes.headers).forEach((key) => {
+                        res.setHeader(key, proxyRes.headers[key]);
                     });
+                    // Send the final response back to the client through the API Gateway
+                    res.status((_a = proxyRes.statusCode) !== null && _a !== void 0 ? _a : 200).json(responseJson);
                 }
                 catch (error) {
                     // Handle JSON parse error or unexpected issues
@@ -55,6 +69,6 @@ exports.topUpProxy = (0, http_proxy_middleware_1.createProxyMiddleware)({
                     res.status(500).json({ error: 'Failed to process response from Top-Up Service' });
                 }
             });
-        })
+        }),
     }
 });
