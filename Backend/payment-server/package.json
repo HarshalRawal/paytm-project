@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build" : "tsc -b",
-    "script" : "node dist/index.js",
-    "dev" : "npm run build && npm run script"
+    "build": "tsc -b",
+    "script": "nodemon dist/index.js",
+    "dev": "npm run build && npm run script"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "@types/axios": "^0.9.36",
     "@types/express": "^5.0.0",
     "axios": "^1.7.7",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "nodemon": "^3.1.7"
   }
 }

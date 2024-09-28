@@ -13,27 +13,37 @@ app.post("/initiate-payment" , async(req ,res)=>{
         return;
     }
 
-
-
     try {
         
-        const userUrl = await axios.post("http://localhost:4002/url", {
+        const bankResponse  = await axios.post("http://localhost:4002/url", {
             userId: userId,
             userName: userName,
             bank: bank,
         });
 
-        
-        res.json({ url: userUrl.data });
+        res.json({ url: bankResponse.data });
+        //store the trancation Id , userId , status id in the db
 
     } catch (error) {
         console.error("Error communicating with the bank server:", error);
         res.status(500).json({ msg: "Bank servers are down, please try again later." });
     }
         
-    
-
 } )
+
+app.post("/status" , async(req , res)=>{
+    const {status , transcationId , userId } = req.body;
+
+    //In db :  find the particular transcation using transactionId , userId and mark the satatus 
+    console.log("reached the post status request")
+    if (status === 'success') {
+        res.json({ message: 'Payment successful' });
+      } else {
+        res.json({ message: 'Payment failed' });
+    }
+})
+
+
 
 
 app.listen(4001);
