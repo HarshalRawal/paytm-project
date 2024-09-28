@@ -16,7 +16,6 @@ export async function idempotencyMiddleware(req:Request,res:Response,next:NextFu
         return;
     }
     await storeIdempotencyKey(idempotencyKey as string);
-    res.status(202).json({status:"processing",message:"Request is being processed",});
     next();
   } catch (error) {
     console.error("Error in idempotencyMiddleware: ",error);

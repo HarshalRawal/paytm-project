@@ -28,7 +28,6 @@ function idempotencyMiddleware(req, res, next) {
                 return;
             }
             yield (0, redisClient_3.storeIdempotencyKey)(idempotencyKey);
-            res.status(202).json({ status: "processing", message: "Request is being processed", });
             next();
         }
         catch (error) {
