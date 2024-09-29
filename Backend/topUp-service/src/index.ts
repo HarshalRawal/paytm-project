@@ -4,7 +4,7 @@ import { topUpSchema } from './schema/schema';
 const app  = express();
 app.use(express.json());
 app.post("/",async(req,res)=>{
-console.log("Top-up service received a request");   
+console.log("Top-up service received a request from api-gateway");   
 const validatedBody = topUpSchema.safeParse(req.body);
   if(!validatedBody.success){
     res.status(400).json({error: validatedBody.error.errors});
