@@ -1,16 +1,25 @@
 {
   "dependencies": {
+    "@prisma/client": "^5.20.0",
     "@types/express": "^5.0.0",
     "express": "^4.21.0",
     "nodemon": "^3.1.7"
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "zod": "^3.23.8"
   },
   "name": "topup-service",
   "version": "1.0.0",
   "main": "index.js",
+  
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "prisma": "^5.20.0"
+  },
   "scripts": {
     "build": "tsc -b",
-    "start": "nodemon dist/index.js",
-    "dev": "npm run build && npm run start"
+    "start": "node dist/index.js",
+    "dev": "tsc -b && node dist/index.js"
   },
   "keywords": [],
   "author": "",
