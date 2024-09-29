@@ -1,7 +1,6 @@
 {
-  "name": "api-gateway",
+  "name": "payment-server",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,16 +11,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "description": "",
   "dependencies": {
-    "@types/http-proxy": "^1.17.15",
-    "express": "^4.21.0",
-    "http-proxy-middleware": "^3.0.2",
-    "nodemon": "^3.1.7",
-    "redis": "^4.7.0"
-  },
-  "devDependencies": {
+    "@types/axios": "^0.9.36",
     "@types/express": "^5.0.0",
-    "@types/http-proxy-middleware": "^1.0.0",
-    "@types/redis": "^4.0.11"
+    "axios": "^1.7.7",
+    "express": "^4.21.0",
+    "nodemon": "^3.1.7"
   }
 }
