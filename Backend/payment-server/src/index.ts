@@ -11,6 +11,11 @@ const kafka = new Kafka({
     brokers: ["localhost:9092"],
 });
 
+interface BankResponse {
+    token: string; // Assuming the bank sends back a token in the response
+    // Add other properties as needed
+}
+
 const consumer = kafka.consumer({ groupId: "payment-group" });
 
 // Connect to Kafka and Database
@@ -40,12 +45,11 @@ async function consumeMessages() {
 
                 if (messageValue) {
                     const parsedMessage = JSON.parse(messageValue);
-                    const { userId, amount } = parsedMessage;
+                    const { userId, amount, transactionId } = parsedMessage;
                     console.log("Parsed Message:", parsedMessage);
 
                     // Process the payment based on the consumed message
-                    // await processPayment(userId, amount);
-                    console.log("successfully processed the payment");
+                    await processPayment(transactionId, userId, amount);
                 } else {
                     console.error("Message value is null");
                 }
@@ -56,81 +60,88 @@ async function consumeMessages() {
     });
 }
 
+// Sending token to API Gateway
+async function sendTokenToGateway(transactionId: string, token: string, userId: string) {
+    try {
+        await axios.post('http://localhost:8000/api-gateway/bank-token', {
+            transactionId,
+            token,
+            userId
+        });
+        console.log(`Token sent to API Gateway for transactionId: ${transactionId}`);
+    } catch (error) {
+        console.error("Error sending token to API Gateway:", error);
+    }
+}
+
 // Process the payment based on the consumed message
-async function processPayment(userId: string, amount: number) {
-    console.log("Processing payment for user:", userId);
+async function processPayment(transactionId: string, userId: string, amount: number) {
+    console.log("Processing payment for user:", userId, "Amount:", amount);
 
     try {
-        // Simulate communication with bank service
-        const bankResponse = await axios.post("http://localhost:4002/url", {
+        const bankResponse = await axios.post<BankResponse>("http://localhost:4002/Demo-bank", {
             userId: userId,
             amount: amount,
         });
 
-        console.log("Bank response:", bankResponse.data);
-
-        // Store the transaction in the database
-        // await prisma.transaction.update({
-        //     data: {
-        //         userId: userId,
-        //         amount: amount,
-        //         status: "success", // Set status based on business logic
-        //         transactionType: "debit",
-        //     }
-        // });
-
-        console.log("Transaction stored successfully for user:", userId);
+        if (bankResponse && bankResponse.data && bankResponse.data.token) {
+            const { token } = bankResponse.data;
+            console.log("Received token from bank:", token);
+            await sendTokenToGateway(transactionId, token, userId);
+        } else {
+            console.error("Invalid bank response:", bankResponse);
+        }
     } catch (error) {
-        console.error("Error communicating with the bank server or storing the transaction:", error);
+        console.error("Error communicating with the bank server:", error);
     }
-}   
-// app.post("/initiate-payment" , async(req ,res)=>{
+}
 
-//     const {userId , userName , bank } = req.body;
-//     if(!userId || !bank){
-//         res.status(400).json({mssg : "Enter the valid user details or bank details"});
+// app.post("/status", async (req, res) => {
+//     const { status, transactionId, userId } = req.body;
+
+//     console.log("Received status update:", { status, transactionId, userId });
+
+//     if (!transactionId || !userId) {
+//         res.status(400).json({ error: 'Transaction ID and User ID are required' });
 //         return;
 //     }
-    
+
 //     try {
-        
-//         const bankResponse  = await axios.post("http://localhost:4002/url", {
-//             userId: userId,
-//             userName: userName,
-//             bank: bank,
+//         // Update the transaction status in the database
+//         await prisma.transaction.update({
+//             where: { transactionId_userId: { transactionId, userId } }, // Adjust your unique key as needed
+//             data: { status }
 //         });
+//         console.log(`Transaction ${transactionId} for user ${userId} updated to ${status}`);
 
-//         res.json({ url: bankResponse.data });
-//         //store the trancation Id , userId , status id in the db
-
+//         if (status === 'success') {
+//             res.status(200).json({ message: 'Payment successful' });
+//         } else {
+//             res.status(400).json({ message: 'Payment failed' });
+//         }
 //     } catch (error) {
-//         console.error("Error communicating with the bank server:", error);
-//         res.status(500).json({ msg: "Bank servers are down, please try again later." });
+//         console.error("Error updating transaction status in database:", error);
+//         res.status(500).json({ error: 'Internal Server Error' });
 //     }
-        
-// } )
+// });
 
-app.post("/status" , async(req , res)=>{
-    const {status , transcationId , userId } = req.body;
-
-    //In db :  find the particular transcation using transactionId , userId and mark the satatus 
-    console.log("reached the post status request")
-    if (status === 'success') {
-        res.json({ message: 'Payment successful' });
-      } else {
-        res.json({ message: 'Payment failed' });
-    }
-})
-
+// Graceful shutdown
 process.on('SIGINT', async () => {
     console.log("Shutting down gracefully...");
-    await consumer.disconnect(); // Disconnect Kafka producer
+    await consumer.disconnect(); // Disconnect Kafka consumer
     await prisma.$disconnect(); // Disconnect Prisma
     process.exit(0); // Exit process
 });
 
+async function start() {
+    await connectKafkaAndDb();
+    await consumeMessages();
 
+    app.listen(3002, () => {
+        console.log("Payment service is running on port 3002");
+    });
+}
 
-app.listen(4001,()=>{
-    console.log("server is running on port 4001");
+start().catch(error => {
+    console.error("Error starting the service:", error);
 });

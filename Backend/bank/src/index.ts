@@ -8,6 +8,14 @@ import { isSuccess } from "./bankFuncitons";
 const app = express();
 app.use(express.json())
 
+app.post('/Demo-bank',(req,res)=>{
+    console.log("req reached the bank server");
+    const {userId , amount} = req.body;
+    const token = uuidv4();
+    res.send({token});
+    return;
+}) 
+
 app.post('/url' , async(req , res)=>{
     
     const {userId , userName , bank} = req.body;
