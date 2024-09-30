@@ -13,10 +13,15 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^5.20.0",
     "@types/axios": "^0.9.36",
     "@types/express": "^5.0.0",
     "axios": "^1.7.7",
     "express": "^4.21.0",
+    "kafkajs": "^2.2.4",
     "nodemon": "^3.1.7"
+  },
+  "devDependencies": {
+    "prisma": "^5.20.0"
   }
 }
