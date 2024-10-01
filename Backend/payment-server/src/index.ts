@@ -34,7 +34,7 @@ async function connectKafkaAndDb() {
 
 // Consume messages from Kafka
 async function consumeMessages() {
-    await consumer.subscribe({ topic: "top-up-transactions", fromBeginning: true });
+    await consumer.subscribe({ topic: "top-up-transactions"});
 
     await consumer.run({
         eachMessage: async ({ topic, partition, message }) => {
@@ -45,11 +45,11 @@ async function consumeMessages() {
 
                 if (messageValue) {
                     const parsedMessage = JSON.parse(messageValue);
-                    const { userId, amount, transactionId } = parsedMessage;
+                    const { userId, amount, transactionId,transactionType } = parsedMessage;
                     console.log("Parsed Message:", parsedMessage);
 
                     // Process the payment based on the consumed message
-                    await processPayment(transactionId, userId, amount);
+                    await processPayment(transactionId, userId, amount,transactionType);
                 } else {
                     console.error("Message value is null");
                 }
@@ -75,14 +75,20 @@ async function sendTokenToGateway(transactionId: string, token: string, userId: 
 }
 
 // Process the payment based on the consumed message
-async function processPayment(transactionId: string, userId: string, amount: number) {
+async function processPayment(transactionId: string, userId: string, amount: number,transactionType:string) {
     console.log("Processing payment for user:", userId, "Amount:", amount);
 
     try {
         const bankResponse = await axios.post<BankResponse>("http://localhost:4002/Demo-bank", {
             userId: userId,
             amount: amount,
-        });
+        },{
+            headers:{
+                'Content-Type': 'application/json',
+                'transactionType':transactionType
+            }
+        }
+        );
 
         if (bankResponse && bankResponse.data && bankResponse.data.token) {
             const { token } = bankResponse.data;

@@ -1,12 +1,20 @@
 import  express  from "express";
 import {v4 as uuidv4} from "uuid"
 import axios from "axios";
-
+import * as crypto from "crypto";
 import { generateTransactionId } from "./bankFuncitons";
 import { isSuccess } from "./bankFuncitons";
 
 const app = express();
 app.use(express.json())
+
+// Secret key for HMAC signing
+const HMAC_SECRET = 'mysecretkey';
+
+// Function to create HMAC SHA256 signature
+function createSignature(payload:string) {
+    return crypto.createHmac('sha256', HMAC_SECRET).update(payload).digest('hex');
+}
 
 app.post('/Demo-bank',(req,res)=>{
     console.log("req reached the bank server");
@@ -15,6 +23,50 @@ app.post('/Demo-bank',(req,res)=>{
     res.send({token});
     return;
 }) 
+
+// Simulate a bank transaction and send a webhook
+app.post('/api/processTransaction', async (req, res) => {
+    const { transactionId, userId, amount ,transactionType} = req.body;
+
+    // Validate required fields
+    if (!transactionId || !userId || !amount|| !transactionType) {
+         res.status(400).json({ error: "Missing required fields in payload" });
+         return
+    }
+
+    // Simulate processing transaction
+    const status = 'success'; // Or 'FAILURE' depending on the transaction outcome
+
+    // Prepare the payload for the webhook
+    const payload = {
+        transactionType,
+        transactionId,
+        userId,
+        status,
+        amount,
+    };
+    const payloadString = JSON.stringify(payload);
+    
+    console.log("Payload String:", payloadString);
+    const signature = createSignature(payloadString);
+
+    try {
+        // Send the webhook notification to the bank-webhook-handler
+        console.log("signature is " + signature);
+        const respone  = await axios.post("http://localhost:5001/api/BankWebhook", JSON.stringify(payload), {
+            headers: {
+                'Content-Type': 'application/json', // Set the content type to application/json
+                'bank-signature': signature,
+            },
+        });
+        res.status(200).json({ message: 'Transaction processed and webhook sent successfully' });
+        return;
+    } catch (error) {
+        console.error('Error sending webhook:', error);
+        res.status(500).json({ error: 'Failed to send webhook notification' });
+        return;
+    }
+});
 
 app.post('/url' , async(req , res)=>{
     

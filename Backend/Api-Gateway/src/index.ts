@@ -57,7 +57,6 @@ app.post('/api-gateway/bank-token', (req, res) => {
     } else {
         console.error(`WebSocket connection for userId ${userId} is not open.`);
     }
-
     res.status(200).json({ message: 'Token received and sent to client' });
 });
 

@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { prisma } from './db';
 import { topUpSchema } from './schema/schema';
 import { Kafka } from 'kafkajs';
+import { TransactionType } from '@prisma/client';
 
 const app:Application = express();
 const PORT = 3001;
@@ -55,13 +56,13 @@ prisma.$connect()
              res.status(404).json({ error: 'User not found' });
              return;
         }
-
+      // Note :- ADD OUTBOX PATTERN HERE
         // Create a new transaction
         const newTransaction = await prisma.transaction.create({
             data: {
                 amount: amount,
                 userId: userId,
-                transactionType: "credit",
+                transactionType: "debit",
                 status: "processing",
                 walletId: walletId
             }
@@ -75,7 +76,8 @@ prisma.$connect()
                     transactionId: newTransaction.id,
                     userId: newTransaction.userId,
                     amount: newTransaction.amount,
-                    walletId: newTransaction.walletId
+                    walletId: newTransaction.walletId,
+                    TransactionType: newTransaction.transactionType
                 }),
                 key: newTransaction.id // Optional key for Kafka partitioning
             }]
