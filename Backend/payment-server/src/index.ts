@@ -60,19 +60,6 @@ async function consumeMessages() {
     });
 }
 
-// Sending token to API Gateway
-async function sendTokenToGateway(transactionId: string, token: string, userId: string) {
-    try {
-        await axios.post('http://localhost:8000/api-gateway/bank-token', {
-            transactionId,
-            token,
-            userId
-        });
-        console.log(`Token sent to API Gateway for transactionId: ${transactionId}`);
-    } catch (error) {
-        console.error("Error sending token to API Gateway:", error);
-    }
-}
 
 // Process the payment based on the consumed message
 async function processPayment(transactionId: string, userId: string, amount: number,transactionType:string) {
@@ -99,6 +86,22 @@ async function processPayment(transactionId: string, userId: string, amount: num
         }
     } catch (error) {
         console.error("Error communicating with the bank server:", error);
+    }
+}
+
+
+
+// Sending token to API Gateway
+async function sendTokenToGateway(transactionId: string, token: string, userId: string) {
+    try {
+        await axios.post('http://localhost:8000/api-gateway/bank-token', {
+            transactionId,
+            token,
+            userId
+        });
+        console.log(`Token sent to API Gateway for transactionId: ${transactionId}`);
+    } catch (error) {
+        console.error("Error sending token to API Gateway:", error);
     }
 }
 
