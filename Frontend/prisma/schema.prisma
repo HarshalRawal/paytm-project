@@ -4,7 +4,16 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
+  url      = "postgresql://HarshalRawal:secretpassword@localhost:5432/Paytm"
+
+  // dokcer command : docker run -d \
+  // --name postgres-container \
+  // -e POSTGRES_DB=Paytm \
+  // -e POSTGRES_USER=HarshalRawal \
+  // -e POSTGRES_PASSWORD=secretpassword \
+  // -p 5432:5432 \
+  // postgres:latest \
+  // -c sslmode=require 
 }
 
 model User {
