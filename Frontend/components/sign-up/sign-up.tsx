@@ -221,17 +221,29 @@
 
 
 
-
-
-
 'use client'
 
-import { useState } from 'react'
-import { X, DollarSign, Euro, Bitcoin, ArrowLeftRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, DollarSign, Euro, Bitcoin, ArrowLeftRight, Sun, Moon } from 'lucide-react'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isDarkMode, setIsDarkMode] = useState(false)
+
+  useEffect(() => {
+    const isDark = localStorage.getItem('darkMode') === 'true'
+    setIsDarkMode(isDark)
+  }, [])
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDarkMode)
+    localStorage.setItem('darkMode', isDarkMode.toString())
+  }, [isDarkMode])
+
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -240,21 +252,27 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl">
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4 transition-colors duration-300 dark:bg-gray-900">
+      <div className="relative w-full max-w-5xl overflow-hidden rounded-lg bg-white shadow-lg transition-all duration-300 ease-in-out hover:shadow-xl dark:bg-gray-800">
         <div className="grid gap-8 md:grid-cols-2">
           <div className="p-8">
             <div className="mb-6 flex items-center justify-between">
-              <button className="text-gray-600 transition-colors duration-200 hover:text-gray-800">
+              <button className="text-gray-600 transition-colors duration-200 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100">
                 <X size={24} />
               </button>
-              <h1 className="text-2xl font-semibold text-blue-500">Sign up</h1>
-              <div className="w-6"></div>
+              <h1 className="text-2xl font-semibold text-blue-500 dark:text-blue-400">Sign up</h1>
+              <button
+                onClick={toggleDarkMode}
+                className="text-gray-600 transition-colors duration-200 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-100"
+                aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Email
                 </label>
                 <input
@@ -263,12 +281,12 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-300"
                   placeholder="Enter your email"
                 />
               </div>
               <div className="space-y-2">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                   Password
                 </label>
                 <input
@@ -277,13 +295,13 @@ export default function SignupPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-white text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:focus:border-blue-400 dark:focus:ring-blue-300"
                   placeholder="Create a password"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full rounded-lg bg-blue-500 px-4 py-3 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                className="w-full rounded-lg bg-blue-500 px-4 py-3 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500 dark:focus:ring-offset-gray-800"
               >
                 Sign up
               </button>
@@ -291,12 +309,12 @@ export default function SignupPage() {
 
             <div className="relative my-6 text-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
               </div>
-              <span className="relative bg-white px-4 text-sm text-gray-500">or</span>
+              <span className="relative bg-white px-4 text-sm text-gray-500 dark:bg-gray-800 dark:text-gray-400">or</span>
             </div>
 
-            <button className="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2">
+            <button className="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 font-semibold text-gray-700 transition-colors duration-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 dark:focus:ring-blue-300 dark:focus:ring-offset-gray-800">
               <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
@@ -319,37 +337,37 @@ export default function SignupPage() {
               Continue with Google
             </button>
 
-            <p className="mt-6 text-center text-sm text-gray-600">
+            <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
               Already have an account?{' '}
-              <a href="#" className="font-semibold text-blue-500 hover:underline">
+              <a href="#" className="font-semibold text-blue-500 hover:underline dark:text-blue-400">
                 Log in
               </a>
             </p>
           </div>
 
-          <div className="relative flex flex-col items-center justify-center space-y-6 overflow-hidden bg-blue-50 p-8 md:items-start">
-            <h2 className="text-3xl font-bold text-blue-600 md:text-4xl lg:text-5xl transition-all duration-300 ease-in-out hover:scale-105">
+          <div className="relative flex flex-col items-center justify-center space-y-6 overflow-hidden bg-blue-50 p-8 md:items-start dark:bg-gray-700">
+            <h2 className="text-3xl font-bold text-blue-600 md:text-4xl lg:text-5xl transition-all duration-300 ease-in-out hover:scale-105 dark:text-blue-400">
               Instant Money Exchange
             </h2>
-            <p className="text-center text-xl text-gray-600 md:text-left md:text-2xl transition-all duration-300 ease-in-out hover:translate-x-2">
+            <p className="text-center text-xl text-gray-600 md:text-left md:text-2xl transition-all duration-300 ease-in-out hover:translate-x-2 dark:text-gray-300">
               Send, receive, and exchange money in seconds!
             </p>
 
             {/* Animated objects */}
-            <DollarSign className="absolute top-4 left-4 h-8 w-8 text-green-500 animate-bounce" />
-            <Euro className="absolute top-1/4 right-8 h-6 w-6 text-blue-500 animate-pulse" />
-            <Bitcoin className="absolute bottom-1/4 left-8 h-10 w-10 text-orange-500 animate-spin-slow" />
-            <ArrowLeftRight className="absolute bottom-8 right-4 h-8 w-8 text-purple-500 animate-ping" />
+            <DollarSign className="absolute top-4 left-4 h-8 w-8 text-green-500 animate-bounce dark:text-green-400" />
+            <Euro className="absolute top-1/4 right-8 h-6 w-6 text-blue-500 animate-pulse dark:text-blue-400" />
+            <Bitcoin className="absolute bottom-1/4 left-8 h-10 w-10 text-orange-500 animate-spin-slow dark:text-orange-400" />
+            <ArrowLeftRight className="absolute bottom-8 right-4 h-8 w-8 text-purple-500 animate-ping dark:text-purple-400" />
           </div>
         </div>
 
         {/* Additional floating objects */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="relative h-40 w-40">
-            <div className="absolute h-4 w-4 rounded-full bg-yellow-400 animate-float1"></div>
-            <div className="absolute h-6 w-6 rounded-full bg-green-400 animate-float2"></div>
-            <div className="absolute h-5 w-5 rounded-full bg-red-400 animate-float3"></div>
-            <div className="absolute h-3 w-3 rounded-full bg-blue-400 animate-float4"></div>
+            <div className="absolute h-4 w-4 rounded-full bg-yellow-400 animate-float1 dark:bg-yellow-300"></div>
+            <div className="absolute h-6 w-6 rounded-full bg-green-400 animate-float2 dark:bg-green-300"></div>
+            <div className="absolute h-5 w-5 rounded-full bg-red-400 animate-float3 dark:bg-red-300"></div>
+            <div className="absolute h-3 w-3 rounded-full bg-blue-400 animate-float4 dark:bg-blue-300"></div>
           </div>
         </div>
       </div>
