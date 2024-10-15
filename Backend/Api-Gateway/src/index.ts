@@ -60,6 +60,18 @@ app.post('/api-gateway/bank-token', (req, res) => {
     res.status(200).json({ message: 'Token received and sent to client' });
 });
 
+app.post('/wallet-service',async (req,res)=>{
+    const amount = req.body.amount;
+    const walletId = req.body.walletId;
+    const userId = req.body.userId;
+
+    const clientSocket = activeClients.get(userId);
+    if(clientSocket && clientSocket.readyState === WebSocket.OPEN){
+        clientSocket.send(JSON.stringify({amount,walletId}));
+        console.log(`Sent amount to wallet service for walletId: ${walletId}`);
+    }
+    res.send({message: 'message  sent to frontend successfully'});
+})
 // Start the server
 server.listen(8000, () => {
     console.log('API Gateway is running on port 8000');
