@@ -62,7 +62,7 @@ prisma.$connect()
             data: {
                 amount: amount,
                 userId: userId,
-                transactionType: "debit",
+                transactionType: "credit",
                 status: "processing",
                 walletId: walletId
             }

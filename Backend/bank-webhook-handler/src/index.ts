@@ -70,20 +70,20 @@ app.post("/api/BankWebhook",async (req: Request, res: Response) => {
                 throw new Error("Transaction not found");
             }
 
-            await tx.transaction.update({
-                where: { id: transactionId },
-                data: { status },
-            });
-
+            // await tx.transaction.update({
+            //     where: { id: transactionId },
+            //     data: { status },
+            // });
+            if(status==="success"){
             await tx.outbox.create({
                 data: {
                     transactionId,
                     eventType: "transaction_status_updated",
-                    payload: JSON.stringify({ status, userId, transactionId, amount,TransactionType }),
+                    payload: JSON.stringify({userId, transactionId, amount,TransactionType}),
                 },
             });
+            }
         });
-
         res.status(200).json({ message: "Webhook processed successfully" });
     } catch (error) {
         console.error("Error processing webhook:", error);
