@@ -36,45 +36,50 @@ export async function consume() {
             if (!message.value) {
                 return;
             }
-            console.log(`Received message: ${message.value}`);
-            const event: WalletEvent = JSON.parse(message.value.toString());
+            console.log(`Received message: ${message.value} from topic: ${topic}, partition: ${partition}`);
+            const rawMessage = message.value.toString();
+            console.log(`Received raw message: ${rawMessage}`);
+            const event: WalletEvent = JSON.parse(rawMessage);
             const { transactionId, userId, amount, transactionType } = event;
             console.log(`Received event`);
             console.log(`Processing transaction: ${transactionId}, userId: ${userId}, amount: ${amount}, type: ${transactionType}`);
-            // try {
-            //     const transaction = await prisma.transaction.findUnique({
-            //         where: { id: transactionId },
-            //     });
+            try {
+                const transaction = await prisma.transaction.findUnique({
+                    where: { id: transactionId },
+                });
 
-                // if (!transaction) {
-                //     console.error(`Transaction not found: ${transactionId}`);
-                //     return;
-                // }
+                if (!transaction) {
+                    console.error(`Transaction not found: ${transactionId}`);
+                    return;
+                }
+                if(transaction.amount!=amount){
+                    console.log(`Amount mismatch for transaction: ${transactionId}`);
+                    return;
+                }
+                if (transaction.status == "success" || transaction.status== "failed" || transaction.amount != amount) {
+                    console.log(`Skipping transaction: ${transactionId}, status: ${transaction.status}`);
+                    return;
+                }
 
-                // if (transaction.status !== "processing" || transaction.amount !== amount) {
-                //     console.log(`Skipping transaction: ${transactionId}, status: ${transaction.status}`);
-                //     return;
-                // }
+                if (transactionType === "credit") {
+                    await processCreditTransaction(transactionId, userId, amount);
+                    try {
+                        const response = await axios.post(`http://localhost:8000/wallet-service`, {
+                            userId: userId,
+                            amount: amount,
+                            walletId: transaction.walletId,
+                        });
+                        console.log(`API Gateway notified successfully: ${response.status}`);
+                    } catch (error) {
+                        console.error("Error notifying API Gateway", error);
+                    }
+                }
 
-                // if (transactionType === "credit") {
-                //     await processCreditTransaction(transactionId, userId, amount as number);
-                //     try {
-                //         const response = await axios.post(`http://localhost:8000/wallet-service`, {
-                //             userId: userId,
-                //             amount: amount,
-                //             walletId: transaction.walletId,
-                //         });
-                //         console.log(`API Gateway notified successfully: ${response.status}`);
-                //     } catch (error) {
-                //         console.error("Error notifying API Gateway", error);
-                //     }
-                // }
+              //  Handle other transaction types (e.g., debit) if needed
 
-                // Handle other transaction types (e.g., debit) if needed
-
-            // } catch (error) {
-            //     console.error("Error processing transaction", { error, transactionId, userId });
-            // }
+            } catch (error) {
+                console.error("Error processing transaction", { error, transactionId, userId });
+            }
         },
     });
 }

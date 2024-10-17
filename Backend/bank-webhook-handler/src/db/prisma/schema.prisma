@@ -7,6 +7,10 @@ datasource db {
   url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
 }
 
+enum TransactionType {
+  credit
+  debit
+}
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -70,7 +74,4 @@ enum TransactionStatus {
   failed
 }
 
-enum TransactionType {
-  credit
-  debit
-}
+
