@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://HarshalRawal:secretpassword@localhost:5432/Paytm"
+  url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
 
   // dokcer command : docker run -d \
   // --name postgres-container \
@@ -26,6 +26,10 @@ datasource db {
   // postgres:latest
 }
 
+enum TransactionType {
+  credit
+  debit
+}
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -89,7 +93,3 @@ enum TransactionStatus {
   failed
 }
 
-enum TransactionType {
-  credit
-  debit
-}
