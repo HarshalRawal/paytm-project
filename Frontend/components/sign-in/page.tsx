@@ -140,7 +140,11 @@ export default function SigninPage() {
         </div>
       </div>
       
+<<<<<<< HEAD
       {/* Unique animated theme toggle button */}
+=======
+     
+>>>>>>> kedar
       <button
         onClick={toggleTheme}
         className="fixed bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-gray-800 shadow-lg transition-all duration-300 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"

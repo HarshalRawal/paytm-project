@@ -4,11 +4,36 @@ import { Kafka } from "kafkajs";
 import { prisma } from "./db";
 import cron from "node-cron";
 import cors from "cors";
-import { TransactionType } from "@prisma/client";
 const app = express();
 const PORT = 5001;
 app.use(cors());
 app.use(express.json());
+
+// Enum for transaction types
+enum TransactionType {
+    credit = "credit",
+    debit = "debit",
+}
+
+// Interface for the event payload
+interface TransactionPayload {
+    transactionId: string;
+    userId: string;
+    amount: number;
+    transactionType: "credit" | "debit";  // Using the enum is also an option
+}
+
+// Interface for the full event
+interface Event {
+    id: string;
+    transactionId: string;
+    eventType: string;
+    payload: TransactionPayload;  // Ensure payload conforms to TransactionPayload type
+    published: boolean;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 
 const HMAC_SECRET = "mysecretkey"; // Load from environment variables
 
@@ -70,20 +95,26 @@ app.post("/api/BankWebhook",async (req: Request, res: Response) => {
                 throw new Error("Transaction not found");
             }
 
-            await tx.transaction.update({
-                where: { id: transactionId },
-                data: { status },
-            });
-
+            // await tx.transaction.update({
+            //     where: { id: transactionId },
+            //     data: { status },
+            // });
+            if(status==="success"){
+             console.log(`Transaction ${transactionId} for user ${userId} updated to ${status} and amount ${amount} and transactionType ${transactionType}`);   
             await tx.outbox.create({
                 data: {
                     transactionId,
                     eventType: "transaction_status_updated",
-                    payload: JSON.stringify({ status, userId, transactionId, amount,TransactionType }),
+                    payload: {
+                        userId,
+                        transactionId, 
+                        amount,
+                        transactionType,
+                    }
                 },
             });
+            }
         });
-
         res.status(200).json({ message: "Webhook processed successfully" });
     } catch (error) {
         console.error("Error processing webhook:", error);
@@ -105,11 +136,17 @@ async function publishOutboxEvents() {
 
         while (attempts < maxRetries) {
             try {
+                const {transactionId,userId,amount,transactionType} = event.payload as unknown as TransactionPayload;
                 await producer.send({
                     topic: "wallet-service-events",
                     messages: [
                         {
-                            value: JSON.stringify(event.payload),
+                            value: JSON.stringify({
+                                transactionId,
+                                userId,
+                                amount,
+                                transactionType,
+                            }),
                         },
                     ],
                 });

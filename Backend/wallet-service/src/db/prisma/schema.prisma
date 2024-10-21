@@ -7,10 +7,6 @@ datasource db {
   url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
 }
 
-enum TransactionType {
-  credit
-  debit
-}
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -47,25 +43,12 @@ model Transaction {
   wallet           Wallet             @relation(fields: [walletId], references: [id])
   userId           String
   user             User               @relation(fields: [userId], references: [id])
-  outboxes         Outbox[] 
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
-
 
   @@index([walletId])  // Add index on `walletId` for faster lookups
   @@index([userId])    // Add index on `userId` for faster lookups
   @@map("transactions")  // Map to `transactions` table in the database
-}
-
-model Outbox {
-  id             String      @id @default(cuid())
-  transactionId  String
-  eventType      String
-  payload        Json
-  published      Boolean     @default(false)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  transaction    Transaction @relation(fields: [transactionId], references: [id])
 }
 
 enum TransactionStatus {
@@ -74,4 +57,7 @@ enum TransactionStatus {
   failed
 }
 
-
+enum TransactionType {
+  credit
+  debit
+}

@@ -5,8 +5,31 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = "postgresql://HarshalRawal:pEj5Q7fbHuAe@ep-delicate-morning-a5swcnzk.us-east-2.aws.neon.tech/Paytm?sslmode=require"
+
+  // dokcer command : docker run -d \
+  // --name postgres-container \
+  // -e POSTGRES_DB=Paytm \
+  // -e POSTGRES_USER=HarshalRawal \
+  // -e POSTGRES_PASSWORD=secretpassword \
+  // -p 5432:5432 \
+  // postgres:latest \
+  // -c sslmode=require 
+  
+  // if volume is needed 
+  // docker run -d \
+  // --name postgres-container \
+  // -e POSTGRES_DB=Paytm \
+  // -e POSTGRES_USER=HarshalRawal \
+  // -e POSTGRES_PASSWORD=secretpassword \
+  // -p 5432:5432 \
+  // -v postgres-data:/var/lib/postgresql/data \
+  // postgres:latest
 }
 
+enum TransactionType {
+  credit
+  debit
+}
 model User {
   id            String         @id @default(cuid())
   name          String
@@ -70,7 +93,3 @@ enum TransactionStatus {
   failed
 }
 
-enum TransactionType {
-  credit
-  debit
-}
