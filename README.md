@@ -1,4 +1,28 @@
-<!-- create the volumes for the different backends (only once) -->
+# Docker Setup for Backend Services
+
+This repository provides instructions for setting up the backend services using Docker. Follow the steps below to create volumes, run PostgreSQL containers for each service, and configure the database URLs.
+
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Step 1: Create Docker Volumes](#step-1-create-docker-volumes)
+- [Step 2: Run PostgreSQL Containers](#step-2-run-postgresql-containers)
+  - [API Gateway](#1-api-gateway)
+  - [Top-Up Server](#2-top-up-server)
+  - [Bank](#3-bank)
+  - [Bank Web Hook Server](#4-bank-web-hook-server)
+  - [Payment](#5-payment)
+  - [Wallet](#6-wallet)
+- [Step 3: Database URLs](#step-3-database-urls)
+
+## Prerequisites
+
+- Ensure you have Docker installed on your machine. If not, you can download and install it from [Docker's official website](https://www.docker.com/products/docker-desktop).
+
+## Step 1: Create Docker Volumes
+
+Create the necessary volumes for the different backend services (this step should only be done once):
+
+```bash
 docker volume create api-gateway-data
 docker volume create top-up-server-data
 docker volume create bank-data
@@ -7,6 +31,8 @@ docker volume create payment-data
 docker volume create wallet-data
 
 <!-- docker commands to create a container  -->
+
+
 # api-gateway Postgres container running on port 8000
 docker run -d \
   --name api-gateway-db \
@@ -88,3 +114,10 @@ DATABASE_URL=postgresql://payment_user:payment_password@localhost:3002/payment_d
 
 # wallet .env
 DATABASE_URL=postgresql://wallet_user:wallet_password@localhost:8085/wallet_db
+
+### How to Use This `README.md`
+1. Copy the above content.
+2. Create a new file named `README.md` in your project directory.
+3. Paste the content into the file and save it.
+
+This organized format will help users understand how to set up the backend services easily, with all necessary commands included for quick reference.
