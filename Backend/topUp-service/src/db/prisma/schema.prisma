@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://topup_user:topup_password@localhost:3001/top_up_server_db"
 }
 
 model User {
