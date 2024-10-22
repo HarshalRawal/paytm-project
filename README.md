@@ -32,7 +32,11 @@ docker volume create wallet-data
 
 <!-- docker commands to create a container  -->
 
+```
 
+## Step 2: Create Docker Containers
+Create the necessary Container for the different backend services
+```bash
 # api-gateway Postgres container running on port 8000
 docker run -d \
   --name api-gateway-db \
@@ -93,10 +97,14 @@ docker run -d \
   -e POSTGRES_DB=wallet_db \
   postgres
 
+```
 
+## Step 3: Change the DB url
 
-  <!-- database urls  -->
-  # api-gateway .env
+Change the respective DB url in the prisma file or env file
+```bash
+
+# api-gateway .env
   <!-- api-gate , bank not needed -->
 DATABASE_URL=postgresql://api_user:api_password@localhost:8000/api_gateway_db 
 
@@ -114,7 +122,7 @@ DATABASE_URL=postgresql://payment_user:payment_password@localhost:3002/payment_d
 
 # wallet .env
 DATABASE_URL=postgresql://wallet_user:wallet_password@localhost:8085/wallet_db
-
+```
 ### How to Use This `README.md`
 1. Copy the above content.
 2. Create a new file named `README.md` in your project directory.
