@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { prisma } from './db';
 import { topUpSchema } from './schema/schema';
 import { Kafka } from 'kafkajs';
-import { TransactionType } from '@prisma/client';
+// import { TransactionType } from '@prisma/client';
 
 const app:Application = express();
 const PORT = 3001;
@@ -21,7 +21,7 @@ app.use(express.json());
 // Establish database connection once at startup
 prisma.$connect()
     .then(() => console.log("Connected to the database successfully"))
-    .catch((error) => {
+    .catch((error: any) => {
         console.error("Error connecting to the database: ", error);
         process.exit(1); // Exit the process if the connection fails
     });

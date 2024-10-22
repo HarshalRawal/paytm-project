@@ -86,7 +86,7 @@ app.post("/api/BankWebhook",async (req: Request, res: Response) => {
     console.log("Received webhook payload:", payload);
 
     try {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx : any) => {
             const existingTransaction = await tx.transaction.findUnique({
                 where: { id: transactionId },
             });

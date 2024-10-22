@@ -9,7 +9,7 @@ app.use(express.json());
 app.use("/api-gateway/top-up", idempotencyMiddleware, topUpProxy);
 
 // Create an HTTP server to host both the REST API and WebSocket server
-const server = createServer(app);
+const server = createServer(app)
 
 // Create a WebSocket server
 const wss = new WebSocket.Server({ server });
