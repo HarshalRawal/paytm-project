@@ -129,3 +129,7 @@ DATABASE_URL=postgresql://wallet_user:wallet_password@localhost:8085/wallet_db
 3. Paste the content into the file and save it.
 
 This organized format will help users understand how to set up the backend services easily, with all necessary commands included for quick reference.
+
+### PORT ERROR 
+1. lsof -i :<port> -> command to find which is using the port 
+2. kill -9 <PID>   -> command to kill the using process 
