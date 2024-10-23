@@ -73,8 +73,8 @@ app.post('/wallet-service',async (req,res)=>{
     res.send({message: 'message  sent to frontend successfully'});
 })
 // Start the server
-server.listen(8000, () => {
-    console.log('API Gateway is running on port 8000');
+server.listen(8080, () => {
+    console.log('API Gateway is running on port 8080');
 });
 
 // Graceful shutdown

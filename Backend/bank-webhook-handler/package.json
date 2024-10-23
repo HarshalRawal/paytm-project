@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -b",
     "script": "nodemon dist/index.js",
-    "dev": "npm run build && npm run script"
+    "dev": "tsc -b && KAFKAJS_NO_PARTITIONER_WARNING=1 node dist/index.js"
   },
   "keywords": [],
   "author": "",
