@@ -221,6 +221,10 @@
 
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> kedar
 'use client'
 
 import { useState, useEffect } from 'react'

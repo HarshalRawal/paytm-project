@@ -20,7 +20,7 @@ app.use(express.json());
 // Establish database connection once at startup
 prisma.$connect()
     .then(() => console.log("Connected to the database successfully"))
-    .catch((error) => {
+    .catch((error: any) => {
         console.error("Error connecting to the database: ", error);
         process.exit(1); // Exit the process if the connection fails
     });
