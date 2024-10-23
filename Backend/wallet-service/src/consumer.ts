@@ -86,7 +86,7 @@ export async function consume() {
 
 async function processCreditTransaction(transactionId: string, userId: string, amount: number) {
     try {
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: any) => {
             await tx.transaction.update({
                 where: { id: transactionId },
                 data: { status: "success" },

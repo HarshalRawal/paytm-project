@@ -6,49 +6,22 @@ datasource db {
   provider = "postgresql"
   url      = "postgresql://wallet_user:wallet_password@localhost:8085/wallet_db"
 }
-
-model User {
-  id            String         @id @default(cuid())
-  name          String
-  email         String         @unique
-  password      String
-  phone         String
-  wallet        Wallet?
-  transactions  Transaction[]  // One-to-many relationship with Transaction
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  @@map("users")  // Map to `users` table in the database
-}
-
 model Wallet {
-  id            String         @id @default(uuid())
-  balance       Int
-  userId        String         @unique  // One-to-one relationship with User, unique constraint
-  user          User           @relation(fields: [userId], references: [id])
-  transactions  Transaction[]  // One-to-many relationship with Transaction
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-
-  @@index([userId])  // Add index on `userId` field for faster lookups
-  @@map("wallets")   // Map to `wallets` table in the database
+  id         String      @id @default(uuid())
+  balance    Int
+  userId     String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Transaction {
-  id               String             @id @default(uuid())
-  transactionType  TransactionType    // Enum for transaction type (credit or debit)
-  status           TransactionStatus  // Enum for transaction status
+  id               String           @id @default(uuid())
   amount           Int
+  status           TransactionStatus
+  transactionType  TransactionType
   walletId         String
-  wallet           Wallet             @relation(fields: [walletId], references: [id])
-  userId           String
-  user             User               @relation(fields: [userId], references: [id])
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-
-  @@index([walletId])  // Add index on `walletId` for faster lookups
-  @@index([userId])    // Add index on `userId` for faster lookups
-  @@map("transactions")  // Map to `transactions` table in the database
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 enum TransactionStatus {
@@ -60,4 +33,13 @@ enum TransactionStatus {
 enum TransactionType {
   credit
   debit
+}
+
+model Outbox {
+  id         String    @id @default(cuid())
+  eventType  String
+  payload    Json
+  published  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
