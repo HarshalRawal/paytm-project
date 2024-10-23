@@ -8,12 +8,12 @@ datasource db {
 }
 
 model TopUpRequest {
-  id             String      @id @default(uuid())
-  userId         String      // references User in Wallet Service
-  amount         Int
-  status         String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  id                 String      @id @default(uuid())
+  userId             String      // references User in Wallet Service
+  amount             Decimal
+  TransactionStatus  TransactionStatus
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 }
 
 model Outbox {
@@ -26,13 +26,10 @@ model Outbox {
 }
 
 
-// enum TransactionStatus {
-//   processing
-//   success
-//   failed
-// }
+enum TransactionStatus {
+  PROCESSING
+  SUCCESS
+  FAILED
+}
 
-// enum TransactionType {
-//   credit
-//   debit
-// }
+

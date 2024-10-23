@@ -53,9 +53,10 @@ datasource db {
 model PaymentRequest {
   id             String      @id @default(uuid())
   transactionId  String
-  amount         Int
-  status         String
-  bankToken      String
+  amount         Decimal
+  PaymentStatus  PaymentStatus
+  userId         String
+  PaymentType    PaymentType
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
@@ -69,14 +70,18 @@ model Outbox {
   updatedAt      DateTime    @updatedAt
 }
 
-
-enum TransactionStatus {
-  processing
-  success
-  failed
+enum PaymentStatus {
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+enum PaymentType {
+  TOP_UP
+  WITHDRAWAL
 }
 
-enum TransactionType {
-  credit
-  debit
+ enum EventType {
+  PAYMENT_INITIATED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
 }
