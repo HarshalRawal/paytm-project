@@ -3,7 +3,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 // Define the proxy middleware
 export const topUpProxy = createProxyMiddleware({
-  target: 'http://localhost:3001/', // Replace with the actual Top-Up Service URL
+  target: 'http://localhost:3005/', // Replace with the actual Top-Up Service URL
   changeOrigin: true,
   selfHandleResponse: true, // Ensure we handle the response manually
   on: {

@@ -1,109 +1,97 @@
-import express, { Application } from 'express';
-import { Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 import { prisma } from './db';
 import { topUpSchema } from './schema/schema';
-import { Kafka } from 'kafkajs';
+import { connectProducer, disconnectProducer, produce, TopUpEvent } from './producer/producer';
+import { connectDb, disconnectDb } from './db';
+import { createTopup, getOutBox, isTopUpPayload } from './utils/utils';
 
-const app:Application = express();
-const PORT = 3001;
+export interface TopUpPayload {
+    walletId: string;
+    topUpId: string;
+    userId: string;
+    amount: number;
+    topUpStatus: string;
+}
 
-// Initialize Kafka
-const kafka = new Kafka({
-    clientId: 'top-up-service',
-    brokers: ['localhost:9092']
-});
-const producer = kafka.producer();
+const app: Application = express();
+const PORT = 3005;
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-// Establish database connection once at startup
-prisma.$connect()
-    .then(() => console.log("Connected to the database successfully"))
-    .catch((error: any) => {
-        console.error("Error connecting to the database: ", error);
-        process.exit(1); // Exit the process if the connection fails
-    });
+async function startServer() {
+    try {
+        await connectDb();
+        await connectProducer();
+        app.listen(PORT, () => {
+            console.log(`Top-up service is running on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Error starting the server: ", error);
+        process.exit(1);
+    }
+}
 
-// Kafka producer connection
- producer.connect()
-    .then(() => console.log("Kafka producer connected successfully"))
-    .catch((error) => {
-        console.error("Error connecting Kafka producer: ", error);
-        process.exit(1); // Exit the process if the Kafka connection fails
-    });
-
-// Top-up service route
- app.post('/',async(req:Request,res:Response)=>{
+async function handleTopUp(req: Request, res: Response) {
     console.log("Top-up service received a request from API Gateway");
+
     // Validate request body
     const validatedBody = topUpSchema.safeParse(req.body);
     if (!validatedBody.success) {
-         res.status(400).json({ error: validatedBody.error.errors });
-         return;
+        res.status(400).json({ error: validatedBody.error.errors });
+        return;
     }
 
     const { userId, amount, walletId } = validatedBody.data;
 
     try {
-        // Check if the user exists
-        const existingUser = await prisma.user.findUnique({
-            where: { id: userId }
-        });
+        // Note: ADD OUTBOX PATTERN HERE
+        const { topUpId, status, outboxId } = await createTopup({ userId, amount, walletId });
 
-        if (!existingUser) {
-             res.status(404).json({ error: 'User not found' });
-             return;
-        }
-      // Note :- ADD OUTBOX PATTERN HERE
-        // Create a new transaction
-        const newTransaction = await prisma.transaction.create({
-            data: {
-                amount: amount,
-                userId: userId,
-                transactionType: "credit",
-                status: "processing",
-                walletId: walletId
+        const { eventType, payload } = await getOutBox(outboxId);
+
+        if (eventType && isTopUpPayload(payload)) {
+            const event: TopUpEvent = { eventType, data: payload };
+
+            try {
+                await prisma.$transaction(async (prisma) => {
+                    await produce(event);
+                    await prisma.outbox.update({
+                        where: { id: outboxId },
+                        data: { published: true },
+                    });
+                });
+            } catch (error) {
+                console.error("Error producing event or updating Outbox: ", error);
+                res.status(500).json({ error: 'Failed to produce event' });
+                return;
             }
-        });
-
-        // Send transaction details to Kafka topic
-        await producer.send({
-            topic: "top-up-transactions",
-            messages: [{
-                value: JSON.stringify({
-                    transactionId: newTransaction.id,
-                    userId: newTransaction.userId,
-                    amount: newTransaction.amount,
-                    walletId: newTransaction.walletId,
-                    TransactionType: newTransaction.transactionType
-                }),
-                key: newTransaction.id // Optional key for Kafka partitioning
-            }]
-        });
+        }
 
         // Return response
-        res.json({
-            transactionId: newTransaction.id,
-            status: newTransaction.status
-        });
+        res.json({transactionId: topUpId,status: status});
         return;
     } catch (error) {
         console.error("Error in top-up service: ", error);
         res.status(500).json({ error: 'Internal server error' });
         return;
     }
-})
+}
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Top-up service is running on port ${PORT}`);
-});
+// Top-up service route
+app.post('/', handleTopUp);
 
 // Gracefully handle server termination and clean up resources
 process.on('SIGINT', async () => {
     console.log("Shutting down gracefully...");
-    await producer.disconnect(); // Disconnect Kafka producer
-    await prisma.$disconnect(); // Disconnect Prisma
-    process.exit(0); // Exit process
+    try {
+        await disconnectDb(); // Disconnect from the database
+        await disconnectProducer(); // Disconnect from Kafka
+    } catch (error) {
+        console.error("Error during disconnection: ", error);
+    } finally {
+        process.exit(0); // Exit process regardless of success or failure
+    }
 });
+
+// Start server
+startServer();
