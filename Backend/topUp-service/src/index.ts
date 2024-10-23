@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import { prisma } from './db';
 import { topUpSchema } from './schema/schema';
 import { Kafka } from 'kafkajs';
-import { TransactionType } from '@prisma/client';
 
 const app:Application = express();
 const PORT = 3001;
