@@ -8,34 +8,24 @@ datasource db {
 }
 
 model User {
-  id           String         @id @default(cuid())
+  userId       String         @id @default(uuid())
   name         String
   email        String         @unique
   password     String
-  phone        String
-  transactions Transaction[]  // Relation to the Transaction table
+  phone        String?
+  walletId     String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
 }
 
-model Transaction {
-  id               String             @id @default(cuid())
-  transactionType  TransactionType
-  status           TransactionStatus
-  amount           Int
-  userId           String
-  user             User               @relation(fields: [userId], references: [id])
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-}
 
-enum TransactionStatus {
-  processing
-  success
-  failed
-}
+// enum TransactionStatus {
+//   processing
+//   success
+//   failed
+// }
 
-enum TransactionType {
-  credit
-  debit
-}
+// enum TransactionType {
+//   credit
+//   debit
+// }
