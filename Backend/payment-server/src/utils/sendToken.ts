@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+// Retry logic if api gateway is down
 export async function sendTokenToGateway(transactionId: string, token: string, userId: string) {
     try {
         await axios.post('http://localhost:8080/api-gateway/bank-token', {

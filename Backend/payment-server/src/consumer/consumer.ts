@@ -79,6 +79,7 @@ export async function consume() {
                         const newPayment = await newPaymentRequest(parsedMessage);
 
                         // If not processed, handle further processing (e.g., payment processing)
+                        // Retry logic if the bank is down
                         await processPayment( newPayment.id ,userId, amount,"top-up");
 
                     } catch (error) {

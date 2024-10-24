@@ -52,7 +52,7 @@ datasource db {
 // }
 model PaymentRequest {
   id             String      @id @default(uuid())
-  transactionId  String
+  transactionId  String      
   amount         Decimal
   PaymentStatus  PaymentStatus
   userId         String

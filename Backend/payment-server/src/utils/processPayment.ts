@@ -20,7 +20,7 @@ export async function processPayment(transactionId: string, userId: string, amou
             }
         }
         );
-
+        // retry logic if status code is not 200
         if (bankResponse && bankResponse.data && bankResponse.data.token && bankResponse.status === 200) {
             const { token } = bankResponse.data;
             console.log("Received token from bank:", token);
