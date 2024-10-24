@@ -23,6 +23,7 @@ This repository provides instructions for setting up the backend services using 
 Create the necessary volumes for the different backend services (this step should only be done once):
 
 ```bash
+docker volume create user-data
 docker volume create api-gateway-data
 docker volume create top-up-server-data
 docker volume create bank-data
@@ -37,6 +38,17 @@ docker volume create wallet-data
 ## Step 2: Create Docker Containers
 Create the necessary Container for the different backend services
 ```bash
+
+# user Postgres container running on port 6000
+docker run -d \
+  --name user-db \
+  -p 6000:5432 \
+  -v user-data:/var/lib/postgresql/data \
+  -e POSTGRES_USER=user \
+  -e POSTGRES_PASSWORD=user_password \
+  -e POSTGRES_DB=user_db \
+  postgres
+
 # api-gateway Postgres container running on port 8000
 docker run -d \
   --name api-gateway-db \
@@ -103,6 +115,9 @@ docker run -d \
 
 Change the respective DB url in the prisma file or env file
 ```bash
+
+# user .env
+DATABASE_URL=postgresql://user:user_password@localhost:6000/user_db
 
 # api-gateway .env
   <!-- api-gate , bank not needed -->
