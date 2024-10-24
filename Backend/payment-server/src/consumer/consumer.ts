@@ -79,7 +79,7 @@ export async function consume() {
                         const newPayment = await newPaymentRequest(parsedMessage);
 
                         // If not processed, handle further processing (e.g., payment processing)
-                        await processPayment( newPayment.id ,userId, amount,"top-up");
+                        await processPayment( topUpId ,userId, amount,"top-up");
 
                     } catch (error) {
                         // Catch any JSON parsing or data processing errors

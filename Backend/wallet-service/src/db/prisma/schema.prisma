@@ -15,7 +15,7 @@ model Wallet {
 }
 
 model Transaction {
-  id               String           @id @default(uuid())
+  id               String           @id @unique
   amount           Decimal
   status           TransactionStatus
   transactionType  TransactionType

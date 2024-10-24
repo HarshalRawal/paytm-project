@@ -138,7 +138,7 @@ async function publishOutboxEvents() {
             try {
                 const {transactionId,userId,amount,transactionType} = event.payload as unknown as TransactionPayload;
                 await producer.send({
-                    topic: "wallet-service-events",
+                    topic: "docker ps",
                     messages: [
                         {
                             value: JSON.stringify({
