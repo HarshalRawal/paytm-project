@@ -1,22 +1,9 @@
-
-// export default function Home() {
-//   return (
-//     <>
-//     <div> this is home page</div>
-//     <WalletButton />
-
-    
-//     </>
-     
-//   )
-// }
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
-import { Sun, Moon, LogIn, LogOut, CreditCard, Repeat, Shield, Zap, Globe, BarChart2, Users, Smartphone, Menu, X } from 'lucide-react'
+import { Sun, Moon, LogIn, LogOut, CreditCard, Repeat, Shield, Zap, Globe, BarChart2, Users, Smartphone, Menu, X, DollarSign, Wallet, PiggyBank } from 'lucide-react'
 import WalletButton from "@/components/wallet-button"
-
 
 const useScrollAnimation = () => {
   const ref = useRef(null)
@@ -70,6 +57,11 @@ export default function ExtendedHomePage() {
     { name: 'Testimonials', href: '#testimonials' },
     { name: 'Download', href: '#download' },
   ]
+
+  const buttonVariants = {
+    hover: { scale: 1.05, boxShadow: "0px 0px 8px rgb(59, 130, 246)" },
+    tap: { scale: 0.95 }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -187,7 +179,7 @@ export default function ExtendedHomePage() {
       </header>
 
       <main className="pt-20">
-        <section className="hero bg-blue-50 dark:bg-gray-800 py-20 transition-colors duration-300">
+        <section className="hero bg-blue-50 dark:bg-gray-800 py-20 transition-colors duration-300 relative overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between">
               <motion.div 
@@ -200,8 +192,9 @@ export default function ExtendedHomePage() {
                 <p className="text-xl mb-8">Fast, secure, and easy-to-use payment solutions for everyone.</p>
                 <motion.button 
                   className="px-6 py-3 bg-blue-500 text-white rounded-full text-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  variants={buttonVariants}
+                  whileHover="hover"
+                  whileTap="tap"
                 >
                   Get Started
                 </motion.button>
@@ -216,6 +209,26 @@ export default function ExtendedHomePage() {
               </motion.div>
             </div>
           </div>
+          <motion.div
+            className="absolute top-1/4 left-1/4 text-blue-500 opacity-50"
+            animate={{
+              y: [0, -20, 0],
+              rotate: [0, 10, 0],
+              transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <DollarSign size={48} />
+          </motion.div>
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 text-green-500 opacity-50"
+            animate={{
+              y: [0, 20, 0],
+              rotate: [0, -10, 0],
+              transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <Wallet size={48} />
+          </motion.div>
         </section>
 
         <section id="features" className="features py-20">
@@ -257,7 +270,7 @@ export default function ExtendedHomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="how-it-works bg-gray-50 dark:bg-gray-800 py-20 transition-colors duration-300">
+        <section id="how-it-works" className="how-it-works bg-gray-50 dark:bg-gray-800 py-20 transition-colors duration-300 relative">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-center mb-12">How PayEase Works</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -276,6 +289,7 @@ export default function ExtendedHomePage() {
                     animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                     transition={{ duration: 0.5, delay: index * 0.2 }}
                   >
+                    
                     <motion.div 
                       className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4"
                       initial={{ scale: 0 }}
@@ -291,6 +305,16 @@ export default function ExtendedHomePage() {
               })}
             </div>
           </div>
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-500 opacity-10"
+            animate={{
+              rotate: 360,
+              scale: [1, 1.1, 1],
+              transition: { duration: 20, repeat: Infinity, ease: "linear" }
+            }}
+          >
+            <PiggyBank size={200} />
+          </motion.div>
         </section>
 
         <section id="testimonials" className="testimonials py-20">
@@ -298,7 +322,7 @@ export default function ExtendedHomePage() {
             <h2 className="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { name: "John Doe", role: "Small Business Owner", quote: "PayEase  has revolutionized how I manage my business finances. It's incredibly user-friendly and secure." },
+                { name: "John Doe", role: "Small Business Owner", quote: "PayEase has revolutionized how I manage my business finances. It's incredibly user-friendly and secure." },
                 { name: "Jane Smith", role: "Freelancer", quote: "As a freelancer, getting paid used to be a hassle. With PayEase, I receive payments instantly from clients worldwide." },
                 { name: "Alex Johnson", role: "Student", quote: "PayEase makes splitting bills with roommates so easy. No more awkward conversations about who owes what!" },
               ].map((testimonial, index) => {
@@ -346,16 +370,18 @@ export default function ExtendedHomePage() {
                 <div className="flex space-x-4">
                   <motion.button 
                     className="px-6 py-3 bg-black text-white rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
                   >
                     <svg className="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
                     App Store
                   </motion.button>
                   <motion.button 
                     className="px-6 py-3 bg-black text-white rounded-lg text-lg font-semibold hover:bg-gray-800 transition-colors duration-300 flex items-center"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    variants={buttonVariants}
+                    whileHover="hover"
+                    whileTap="tap"
                   >
                     <svg className="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M3.609 1.814L13.792 12 3.61 22.186a.996.996 0 0 1-1.392 0 .988.988 0 0 1 0-1.39L10.61 12 2.218 3.203a.988.988 0 0 1 0-1.389.996.996 0 0 1 1.39 0zm6.174 0L20 12 9.783 22.186a.996.996 0 0 1-1.391 0 .988.988 0 0 1 0-1.39L17.61 12 8.392 3.203a.988.988 0 0 1 0-1.389.996.996 0 0 1 1.39 0z"/></svg>
                     Google Play
@@ -367,6 +393,7 @@ export default function ExtendedHomePage() {
                 initial={{ opacity: 0, x: 50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
+                whileHover={{ scale: 1.05, boxShadow: "0px 0px 20px rgba(59, 130, 246, 0.5)" }}
               >
                 <img src="/placeholder.svg?height=600&width=300" alt="PayEase Mobile App" className="mx-auto rounded-3xl shadow-2xl" />
               </motion.div>
@@ -394,8 +421,9 @@ export default function ExtendedHomePage() {
             </motion.p>
             <motion.button 
               className="px-8 py-4 bg-white text-blue-500 rounded-full text-lg font-semibold hover:bg-gray-100 transition-colors duration-300"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              variants={buttonVariants}
+              whileHover="hover"
+              whileTap="tap"
             >
               Sign Up Now
             </motion.button>
