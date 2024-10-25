@@ -39,7 +39,31 @@ wss.on('connection', (ws) => {
         });
     });
 });
+app.post('/api-gateway/bank-wehook-notification',async (req,res)=>{
+    const {transactionStatus,message,userId} = req.body;
+    res.send({message: 'Webhook notification received successfully from bank-webhook'});
+    const clientSocket = activeClients.get(userId);
+    if(clientSocket && clientSocket.readyState === WebSocket.OPEN){
+        clientSocket.send(JSON.stringify({transactionStatus,message}));
+        console.log(`Sent webhook notification to client for userId: ${userId}`);
+    }
+    else{
+        console.error(`WebSocket connection for userId ${userId} is not open.`);
+    }
+})
 
+app.post('/api-gateway/wallet-notification',async (req,res)=>{
+    const {message,userId} = req.body;
+    res.send({message: 'Notification received successfully from wallet-service'});
+    const clientSocket = activeClients.get(userId);
+    if(clientSocket && clientSocket.readyState === WebSocket.OPEN){
+        clientSocket.send(JSON.stringify({message}));
+        console.log(`Sent notification to client for userId: ${userId}`);
+    }
+    else{
+        console.error(`WebSocket connection for userId ${userId} is not open.`);
+    }
+}) 
 // Endpoint to receive the bank token from Payment Service
 app.post('/api-gateway/bank-token', (req, res) => {
     const { token ,userId ,PaymentId   } = req.body; // Include userId
@@ -48,10 +72,9 @@ app.post('/api-gateway/bank-token', (req, res) => {
         res.status(400).json({ error: 'Transaction ID, token, and user ID are required' });
         return;
     }
-
     const clientSocket = activeClients.get(userId);
     if (clientSocket && clientSocket.readyState === WebSocket.OPEN) {
-        const redirectUrl = `https://bank.com/redirect/token=${token}`;
+        const redirectUrl = `http://localhost:4008/Demo-bank/net-banking/${token}`;
         clientSocket.send(JSON.stringify({ PaymentId, redirectUrl, token }));
         console.log(`Sent bank token for Payment ID: ${PaymentId} to client`);
     } else {

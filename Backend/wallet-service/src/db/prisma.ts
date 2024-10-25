@@ -17,3 +17,14 @@ export async function connectDb(){
         process.exit(1);
     }
 }
+
+export async function disconnectDb(){
+    try{
+        await prisma.$disconnect();
+        console.log("Disconnected from the database");
+    }
+    catch(error){
+        console.error("Error disconnecting from the database", error);
+        process.exit(1);
+    }
+}
