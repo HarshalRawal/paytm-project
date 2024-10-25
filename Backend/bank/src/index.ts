@@ -16,13 +16,39 @@ function createSignature(payload:string) {
     return crypto.createHmac('sha256', HMAC_SECRET).update(payload).digest('hex');
 }
 
-app.post('/Demo-bank',(req,res)=>{
-    console.log("req reached the bank server");
-    const {userId , amount} = req.body;
-    const token = uuidv4();
-    res.send({token});
-    return;
-}) 
+app.post('/Demo-bank', (req, res) => {
+    console.log("Request reached the bank server");
+
+    try {
+        // Validate the request body
+        const { userId, amount } = req.body;
+        if (!userId || !amount) {
+            res.status(400).send({ error: "Missing required fields: userId and amount." });
+            return;
+        }
+
+        const bankReferenceId = uuidv4();
+        const tokenData = {
+            userId,
+            amount,
+            bankReferenceId, // Include bankReferenceId in token data
+        };
+
+        const token = Buffer.from(JSON.stringify(tokenData)).toString('base64');
+
+        // Send the token and bankReferenceId back in the response
+        res.status(200).send({
+            token,
+            bankReferenceId,
+        });
+        console.log(`Generated token: ${token} with userId: ${userId} and amount: ${amount} for tracking ID: ${bankReferenceId}`);
+        return;
+    } catch (error) {
+        console.error("Error processing the request:", error);
+        res.status(500).send({ error: "Internal Server Error" });
+        return;
+    }
+})
 
 // Simulate a bank transaction and send a webhook
 app.post('/api/processTransaction', async (req, res) => {

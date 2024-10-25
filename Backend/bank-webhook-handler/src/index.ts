@@ -1,12 +1,11 @@
 import express, { Request, Response } from "express";
 import { verifySignature } from "./utils/verifySignature";
-import { Kafka } from "kafkajs";
+import { connectDB,disconnectDB } from "./db";
+import { connectProducer,disconnectProducer } from "./producer/producer";
 import { prisma } from "./db";
 import cron from "node-cron";
-import cors from "cors";
 const app = express();
-const PORT = 5001;
-app.use(cors());
+const PORT = 5002;
 app.use(express.json());
 
 // Enum for transaction types
@@ -37,25 +36,10 @@ interface Event {
 
 const HMAC_SECRET = "mysecretkey"; // Load from environment variables
 
-const kafka = new Kafka({
-    clientId: "bank-webhook-handler",
-    brokers: ["localhost:9092"],
-});
 
-const producer = kafka.producer();
 
-async function connectKafkaAndDb() {
-    try {
-        await producer.connect();
-        console.log("Connected to Kafka broker");
 
-        await prisma.$connect();
-        console.log("Connected to the database successfully");
-    } catch (error) {
-        console.error("Error connecting to Kafka or database", error);
-        process.exit(1);
-    }
-}
+
 
 app.post("/api/BankWebhook",async (req: Request, res: Response) => {
     console.log("Received webhook request from bank");
@@ -178,23 +162,29 @@ cron.schedule('* * * * *', async () => {
     await publishOutboxEvents();
 });
 
-app.listen(PORT, () => {
-    console.log(`Bank-webhook-handler is running on port ${PORT}`);
-});
+
 
 async function start() {
-    await connectKafkaAndDb();
-    await publishOutboxEvents(); // Initial call if there are any events already present
+   try {
+
+     await connectDB();
+     await connectProducer(); 
+
+     app.listen(PORT, () => {
+        console.log(`Bank-webhook-handler is running on port ${PORT}`);
+    });
+
+   } catch (error) {
+     console.error('error starting the server',error);
+     process.exit(1);
+   }// Initial call if there are any events already present
 }
 
 process.on('SIGINT', async () => {
     console.log("Shutting down gracefully...");
-    await producer.disconnect(); // Disconnect Kafka producer
-    await prisma.$disconnect(); // Disconnect Prisma
+    await disconnectProducer() // Disconnect Kafka producer
+    await disconnectDB(); // Disconnect Prisma
     process.exit(0); // Exit process
 });
 
-start().catch((error) => {
-    console.error("Error starting server:", error);
-    process.exit(1);
-});
+start();

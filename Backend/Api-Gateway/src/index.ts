@@ -42,18 +42,18 @@ wss.on('connection', (ws) => {
 
 // Endpoint to receive the bank token from Payment Service
 app.post('/api-gateway/bank-token', (req, res) => {
-    const { transactionId, token, userId } = req.body; // Include userId
+    const { token ,userId ,PaymentId   } = req.body; // Include userId
 
-    if (!transactionId || !token || !userId) {
+    if (!PaymentId || !token || !userId) {
         res.status(400).json({ error: 'Transaction ID, token, and user ID are required' });
         return;
     }
 
     const clientSocket = activeClients.get(userId);
     if (clientSocket && clientSocket.readyState === WebSocket.OPEN) {
-        const redirectUrl = `https://bank.com/redirect?token=${token}`;
-        clientSocket.send(JSON.stringify({ transactionId, redirectUrl, token }));
-        console.log(`Sent bank token for transaction ID: ${transactionId} to client`);
+        const redirectUrl = `https://bank.com/redirect/token=${token}`;
+        clientSocket.send(JSON.stringify({ PaymentId, redirectUrl, token }));
+        console.log(`Sent bank token for Payment ID: ${PaymentId} to client`);
     } else {
         console.error(`WebSocket connection for userId ${userId} is not open.`);
     }
