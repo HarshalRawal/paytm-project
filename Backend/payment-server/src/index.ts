@@ -1,7 +1,8 @@
 import express from "express";
 import { connectDB,disconnectDB } from "./db";
 import { topUpController } from "./controller/topUpController";
-
+import { connectKafka,disconnectKafka } from "./consumer/consumer";
+import { consumeFromKafka } from "./consumer/consumer";
 const app = express();
 
 const PORT = 5007;
@@ -14,6 +15,8 @@ app.post("/",topUpController);
 async function startServer(){
     try {
         await connectDB();
+        await connectKafka();
+        consumeFromKafka("top-up-transactions");
         app.listen(PORT,()=>{
             console.log(`Payment server is running on port ${PORT}`);
         })
@@ -23,4 +26,9 @@ async function startServer(){
     }
 }
 
+process.on("SIGINT",async ()=>{
+    await disconnectDB();
+    await disconnectKafka();
+    process.exit(0);
+})
 startServer();

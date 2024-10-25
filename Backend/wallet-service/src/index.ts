@@ -1,7 +1,6 @@
 import express from "express";
-import { connectKafka, disconnectKafka, consume } from "./consumer"; // Combined imports
-import { connectDb } from "./db/prisma";
-import { prisma } from "./db/prisma";
+import { connectKafka, disconnectKafka, consumeFromKafka } from "./consumer/consumer"; // Combined imports
+import { connectDb ,disconnectDb} from "./db/prisma";
 
 const app = express();
 app.use(express.json());
@@ -19,7 +18,7 @@ app.get("/health", async (req, res) => {
 // Example route for top-up (add more routes as needed)
 // app.post("/topup", handleTopUp); 
 
-const PORT = process.env.PORT || 8085;
+const PORT = process.env.PORT || 8086;
 
 app.listen(PORT, () => {
     console.log(`Wallet service is running on port ${PORT}`);
@@ -29,7 +28,7 @@ async function start() {
     try {
         await connectKafka();
         await connectDb();
-        console.log("Connected to Kafka and Database successfully");
+        consumeFromKafka("top-up-transactions");
     } catch (error) {
         console.error("Error starting the service:", error);
         process.exit(1); // Exit if unable to start
@@ -40,7 +39,7 @@ process.on('SIGINT', async () => {
     console.log("Shutting down gracefully...");
     try {
         await disconnectKafka(); // Disconnect Kafka
-        await prisma.$disconnect(); // Disconnect Prisma
+        await disconnectDb(); // Disconnect Database
         console.log("Disconnected from Kafka and Database");
     } catch (error) {
         console.error("Error during shutdown:", error);
@@ -49,9 +48,4 @@ process.on('SIGINT', async () => {
     }
 });
 
-start()
-    .then(consume)
-    .catch(error => {
-        console.error("Error during startup process:", error);
-        process.exit(1); // Exit on startup failure
-    });
+start();

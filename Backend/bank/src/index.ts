@@ -51,22 +51,32 @@ app.post('/Demo-bank', (req, res) => {
 })
 
 // Simulate a bank transaction and send a webhook
-app.post('/api/processTransaction', async (req, res) => {
-    const { transactionId, userId, amount ,transactionType} = req.body;
+app.post('/Demo-bank/net-banking/:token', async (req, res) => {
+    const {username, password} = req.body;
+    const { token } = req.params;
 
     // Validate required fields
-    if (!transactionId || !userId || !amount|| !transactionType) {
-         res.status(400).json({ error: "Missing required fields in payload" });
-         return
+    if (!username || !password) {
+        res.status(400).json({ error: 'Missing required fields: username and password' });
+        return;
     }
+    const checkUsernameInDb = "success";
+    const checkPasswordInDb = "success";
+    if(checkUsernameInDb !== "success" || checkPasswordInDb !== "success"){
+        res.status(400).json({ error: 'Invalid username or password' });
+        return;
+    }
+    
+        const tokenData = JSON.parse(Buffer.from(token, 'base64').toString());
+        const { userId, amount, bankReferenceId } = tokenData;
 
     // Simulate processing transaction
-    const status = 'success'; // Or 'FAILURE' depending on the transaction outcome
+    const status = 'SUCCESS'; // Or 'FAILURE' depending on the transaction outcome
 
     // Prepare the payload for the webhook
     const payload = {
-        transactionType,
-        transactionId,
+        transactionType: "TOP_UP",
+        bankReferenceId: bankReferenceId,
         userId,
         status,
         amount,
@@ -79,7 +89,7 @@ app.post('/api/processTransaction', async (req, res) => {
     try {
         // Send the webhook notification to the bank-webhook-handler
         console.log("signature is " + signature);
-        const respone  = await axios.post("http://localhost:5001/api/BankWebhook", JSON.stringify(payload), {
+        const respone  = await axios.post("http://localhost:5002/api/BankWebhook", JSON.stringify(payload), {
             headers: {
                 'Content-Type': 'application/json', // Set the content type to application/json
                 'bank-signature': signature,
@@ -94,51 +104,9 @@ app.post('/api/processTransaction', async (req, res) => {
     }
 });
 
-app.post('/url' , async(req , res)=>{
-    
-    const {userId , userName , bank} = req.body;
-    console.log("req reached the bank url-request");
-    
-    const token = uuidv4()
-    const transcationId = generateTransactionId();
-    const url = `https://localhost:4563/?\?token=${token}`;
-
-    res.send({url , transcationId});
-    return;
-
-})
-app.post('/' , async (req , res) =>{
-    const {cardNumber , expiry , cvv , transcationId , userId} = req.body;
-
-    const success = isSuccess(cardNumber , expiry , cvv, transcationId , userId);
-
-    if(!success){
-        res.json({mssg : "Enter the valid card details or valid transaction Id"})
-        return;
-    }
-    // check the types by zod and remove the if case so that the transaction may be either success or fail
-
-    try {
-        
-        const sendStatus = await axios.post("http://localhost:4001/status" , {
-            transcationId : transcationId ,
-            userId : userId,
-            status : success
-        })
-
-        if(sendStatus){
-            res.send("success")
-        }else{
-            res.send("failed")
-        }
-    } catch (error) {
-        res.status(401).json({err : "error is " + error});
-        return;
-    }
 
 
 
-})
 
 
 app.listen(4008);
