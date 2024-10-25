@@ -1,4 +1,4 @@
-import SigninPage from "@/components/sign-in/page"
+import SigninPage from "@/components/signin"
 export default function Home() {
   return (
      <SigninPage/>
