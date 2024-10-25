@@ -1,4 +1,4 @@
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 import { prisma } from "../db/prisma";
 import axios from "axios";
 import { TransactionStatus } from "@prisma/client";
@@ -9,6 +9,7 @@ import { sendNotification } from "../utils/sendNotification";
 const kafka = new Kafka({
     clientId: "wallet-service",
     brokers: ["localhost:9092"],
+    logLevel:logLevel.WARN
 });
 
 export interface Payload {

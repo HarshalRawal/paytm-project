@@ -1,9 +1,10 @@
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 import { PaymentType,PaymentStatus } from "@prisma/client";
 import { updatePaymentTable } from "../utils/updatePaymentTable";
 const kafka = new Kafka({
   clientId: "payment-server",
   brokers: ["localhost:9092"],
+  logLevel:logLevel.WARN
 });
 
 export interface Payload {
