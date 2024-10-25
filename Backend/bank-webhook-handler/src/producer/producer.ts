@@ -1,10 +1,11 @@
-import { Kafka } from "kafkajs";
+import { Kafka, logLevel } from "kafkajs";
 import { storePayload } from "../utils/storePayload";
 import { prisma } from "../db";
 import { Payload } from "../utils/storePayload";
 const kafka = new Kafka({
     clientId: "bank-webhook-handler",
     brokers: ["localhost:9092"],
+    logLevel:logLevel.WARN
 });
 
 const producer = kafka.producer();
