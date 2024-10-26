@@ -12,7 +12,7 @@ import CTA from '@/components/home/CTA'
 import Footer from '@/components/home/Footer'
 
 export default function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isDarkMode, setIsDarkMode] = useState(true)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const { scrollYProgress } = useScroll()
