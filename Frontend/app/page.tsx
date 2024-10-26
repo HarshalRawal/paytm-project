@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from 'framer-motion'
-import { Sun, Moon, LogIn, LogOut, CreditCard, Repeat, Shield, Zap, Globe, BarChart2, Users, Smartphone, Menu, X, DollarSign, Wallet, PiggyBank } from 'lucide-react'
+import { Sun, Moon, LogIn, LogOut, CreditCard, Repeat, Shield, Zap, Globe, BarChart2, Users, Smartphone, Menu, X, DollarSign, Wallet, PiggyBank ,Coins, Receipt} from 'lucide-react'
 import WalletButton from "@/components/wallet-button"
 
 const useScrollAnimation = () => {
@@ -179,55 +179,125 @@ export default function ExtendedHomePage() {
       </header>
 
       <main className="pt-20">
-        <section className="hero bg-blue-50 dark:bg-gray-800 py-20 transition-colors duration-300 relative overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row items-center justify-between">
+        <section className="hero bg-gradient-to-br from-blue-500 to-purple-600 text-white py-32 transition-colors duration-300 relative overflow-hidden">
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex flex-col items-center justify-center text-center">
               <motion.div 
-                className="md:w-1/2 mb-10 md:mb-0"
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
+                className="max-w-4xl"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
               >
-                <h2 className="text-4xl md:text-5xl font-bold mb-4">Simplify Your Payments with PayEase</h2>
-                <p className="text-xl mb-8">Fast, secure, and easy-to-use payment solutions for everyone.</p>
+                <motion.h1 
+                    className="text-6xl md:text-8xl font-extrabold mb-6 leading-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-300"
+                    animate={{ 
+                      backgroundPosition: ["0%", "100%", "0%"],
+                    }}
+                    transition={{
+                      duration: 5,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
+                  >
+                    Revolutionize Your{' '}
+                    Payments{' '}
+                    with{' '}
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-yellow-200">
+                      PayEase
+                    </span>
+                </motion.h1>
+
+                  <motion.p 
+                    className="text-xl md:text-3xl mb-12 text-blue-100 font-light"
+                    animate={{ 
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    Experience lightning-fast, secure, and user-friendly payment solutions designed for modern businesses and individuals.
+                  </motion.p>
                 <motion.button 
-                  className="px-6 py-3 bg-blue-500 text-white rounded-full text-lg font-semibold hover:bg-blue-600 transition-colors duration-300"
-                  variants={buttonVariants}
-                  whileHover="hover"
-                  whileTap="tap"
+                  className="px-10 py-5 bg-white text-blue-600 rounded-full text-xl font-bold transition-colors duration-300 shadow-lg hover:bg-blue-100"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  animate={{ 
+                    boxShadow: ["0px 0px 0px rgba(255,255,255,0.5)", "0px 0px 20px rgba(255,255,255,0.5)", "0px 0px 0px rgba(255,255,255,0.5)"],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                 >
-                  Get Started
+                  Start Your Free Trial
                 </motion.button>
-              </motion.div>
-              <motion.div 
-                className="md:w-1/2"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-              >
-                <img src="/placeholder.svg?height=400&width=600" alt="PayEase App Interface" className="rounded-lg shadow-xl" />
               </motion.div>
             </div>
           </div>
+
+          {/* Animated Background Icons */}
           <motion.div
-            className="absolute top-1/4 left-1/4 text-blue-500 opacity-50"
+            className="absolute top-1/4 left-1/4 text-white opacity-20"
             animate={{
               y: [0, -20, 0],
               rotate: [0, 10, 0],
-              transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+              scale: [1, 1.1, 1],
+              transition: { duration: 5, repeat: Infinity, ease: "easeInOut" }
             }}
           >
-            <DollarSign size={48} />
+            <DollarSign size={80} />
           </motion.div>
           <motion.div
-            className="absolute bottom-1/4 right-1/4 text-green-500 opacity-50"
+            className="absolute bottom-1/4 right-1/4 text-blue-300 opacity-20"
             animate={{
               y: [0, 20, 0],
               rotate: [0, -10, 0],
+              scale: [1, 1.2, 1],
+              transition: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <Wallet size={100} />
+          </motion.div>
+          <motion.div
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-300 opacity-10"
+            animate={{
+              rotate: 360,
+              scale: [1, 1.2, 1],
+              transition: { duration: 20, repeat: Infinity, ease: "linear" }
+            }}
+          >
+            <PiggyBank size={300} />
+          </motion.div>
+          <motion.div
+            className="absolute top-1/3 right-1/5 text-green-300 opacity-20"
+            animate={{
+              scale: [1, 1.3, 1],
               transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
             }}
           >
-            <Wallet size={48} />
+            <CreditCard size={120} />
+          </motion.div>
+          <motion.div
+            className="absolute bottom-1/5 left-1/5 text-purple-300 opacity-20"
+            animate={{
+              rotate: 360,
+              transition: { duration: 15, repeat: Infinity, ease: "linear" }
+            }}
+          >
+            <Coins size={150} />
+          </motion.div>
+          <motion.div
+            className="absolute top-1/5 right-1/3 text-red-300 opacity-20"
+            animate={{
+              y: [0, 30, 0],
+              transition: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <Receipt size={90} />
           </motion.div>
         </section>
 
@@ -270,52 +340,103 @@ export default function ExtendedHomePage() {
           </div>
         </section>
 
-        <section id="how-it-works" className="how-it-works bg-gray-50 dark:bg-gray-800 py-20 transition-colors duration-300 relative">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">How PayEase Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                { step: 1, title: "Create an Account", description: "Sign up for free in minutes and verify your identity." },
-                { step: 2, title: "Add Funds", description: "Link your bank account or add money via credit/debit card." },
-                { step: 3, title: "Start Transacting", description: "Send money, pay bills, or shop online with ease." },
-              ].map((item, index) => {
-                const { ref, isInView } = useScrollAnimation()
-                return (
-                  <motion.div 
-                    key={index}
-                    ref={ref}
-                    className="flex flex-col items-center text-center"
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-                    transition={{ duration: 0.5, delay: index * 0.2 }}
-                  >
-                    
-                    <motion.div 
-                      className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4"
-                      initial={{ scale: 0 }}
-                      animate={isInView ? { scale: 1 } : { scale: 0 }}
-                      transition={{ duration: 0.5, delay: index * 0.2 + 0.2 }}
-                    >
-                      {item.step}
-                    </motion.div>
-                    <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                    <p>{item.description}</p>
-                  </motion.div>
-                )
-              })}
-            </div>
-          </div>
-          <motion.div
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-500 opacity-10"
-            animate={{
-              rotate: 360,
-              scale: [1, 1.1, 1],
-              transition: { duration: 20, repeat: Infinity, ease: "linear" }
-            }}
-          >
-            <PiggyBank size={200} />
-          </motion.div>
-        </section>
+        <section id="how-it-works" className="how-it-works bg-gray-50 dark:bg-gray-800 py-20 transition-colors duration-300 relative overflow-hidden">
+      <div className="container mx-auto px-4 relative z-10">
+        <h2 className="text-3xl font-bold text-center mb-12">How PayEase Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            { step: 1, title: "Create an Account", description: "Sign up for free in minutes and verify your identity." },
+            { step: 2, title: "Add Funds", description: "Link your bank account or add money via credit/debit card." },
+            { step: 3, title: "Start Transacting", description: "Send money, pay bills, or shop online with ease." },
+          ].map((item, index) => {
+            const { ref, isInView } = useScrollAnimation()
+            return (
+              <motion.div 
+                key={index}
+                ref={ref}
+                className="flex flex-col items-center text-center"
+                initial={{ opacity: 0, y: 50 }}
+                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                transition={{ duration: 0.5, delay: index * 0.2 }}
+              >
+                <motion.div 
+                  className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold mb-4"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 + 0.2 }}
+                >
+                  {item.step}
+                </motion.div>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
+                <p>{item.description}</p>
+              </motion.div>
+            )
+          })}
+        </div>
+      </div>
+      
+      {/* Background Icons */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-500 opacity-10"
+        animate={{
+          rotate: 360,
+          scale: [1, 1.1, 1],
+          transition: { duration: 20, repeat: Infinity, ease: "linear" }
+        }}
+      >
+        <PiggyBank size={200} />
+      </motion.div>
+      
+      <motion.div
+        className="absolute top-1/4 left-1/4 text-green-500 opacity-10"
+        animate={{
+          y: [0, -20, 0],
+          transition: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <CreditCard size={100} />
+      </motion.div>
+      
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 text-yellow-500 opacity-10"
+        animate={{
+          rotate: [-10, 10, -10],
+          transition: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <Wallet size={120} />
+      </motion.div>
+      
+      <motion.div
+        className="absolute top-1/3 right-1/5 text-red-500 opacity-10"
+        animate={{
+          scale: [1, 1.2, 1],
+          transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <DollarSign size={80} />
+      </motion.div>
+      
+      <motion.div
+        className="absolute bottom-1/5 left-1/5 text-purple-500 opacity-10"
+        animate={{
+          rotate: 360,
+          transition: { duration: 15, repeat: Infinity, ease: "linear" }
+        }}
+      >
+        <Coins size={150} />
+      </motion.div>
+      
+      <motion.div
+        className="absolute top-1/5 right-1/3 text-indigo-500 opacity-10"
+        animate={{
+          y: [0, 30, 0],
+          transition: { duration: 6, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <Receipt size={90} />
+      </motion.div>
+    </section>
 
         <section id="testimonials" className="testimonials py-20">
           <div className="container mx-auto px-4">
