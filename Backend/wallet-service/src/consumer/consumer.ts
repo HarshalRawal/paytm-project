@@ -46,7 +46,7 @@ export async function disconnectKafka() {
 export async function consumeFromKafka(topic: string) {
       try {
         await consumer.run({
-            eachMessage: async ({ topic, partition, message }) => {
+            eachMessage: async ({ message }) => {
                 if(!message.value){
                     return;
                 }
