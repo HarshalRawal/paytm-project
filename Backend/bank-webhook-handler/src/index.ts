@@ -13,7 +13,7 @@ app.post("/api/BankWebhook", handleWebhook);
 
 cron.schedule('* * * * *', async () => {
     try {
-        await backGroundEventProducer("topic");
+         backGroundEventProducer("topic");
         console.log('Running a task every minute');
     } catch (error) {
         console.error("Error in cron job:", error);
