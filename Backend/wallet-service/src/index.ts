@@ -1,10 +1,18 @@
 import express from "express";
+import cors from "cors"; // Import the CORS package
 import { connectKafka, disconnectKafka, consumeFromKafka } from "./consumer/consumer"; // Combined imports
-import { connectDb ,disconnectDb} from "./db/prisma";
+import { connectDb, disconnectDb } from "./db/prisma";
 import { prisma } from "./db/prisma";
 import { PrismaClient } from "@prisma/client";
 
 const app = express();
+
+// Add CORS middleware
+app.use(cors({
+    origin: 'http://localhost:3000', // Change this to your frontend origin
+    credentials: true // Allow cookies to be sent
+}));
+
 app.use(express.json());
 const prismaClient = new PrismaClient();
 
@@ -18,28 +26,27 @@ app.get("/health", async (req, res) => {
     }
 });
 
-app.post("/create-wallet" , async(req , res)=>{
+app.post("/create-wallet", async (req, res) => {
     const body = req.body;
-    const userId = body.userId
+    const userId = body.userId;
     try {
         const newUser = await prismaClient.wallet.create({
-            data :{
-             balance : 0,
-             userId : userId
-
+            data: {
+                balance: 0,
+                userId: userId
             }
-        })
+        });
 
         const walletId = newUser.id;
-        console.log(`new wallet is created for userId - ${userId} with walletid - ${newUser.id} `);
+        console.log(`new wallet is created for userId - ${userId} with walletid - ${newUser.id}`);
         res.status(200).json(walletId);
     } catch (error) {
-        console.log("error while creating a wallet" , error);
-        res.status(400).send(error)
+        console.log("error while creating a wallet", error);
+        res.status(400).send(error);
     }
 })
 // Example route for top-up (add more routes as needed)
-// app.post("/topup", handleTopUp); 
+// app.post("/topup", handleTopUp);
 
 const PORT = process.env.PORT || 8086;
 

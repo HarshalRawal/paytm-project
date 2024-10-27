@@ -2,6 +2,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import axios from 'axios'
 import { X, Mail, Lock, ArrowRight, AlertCircle, Sun, Moon } from 'lucide-react'
 
 export default function SigninPage() {
@@ -20,6 +21,15 @@ export default function SigninPage() {
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode)
+  }
+  const signin = async ()=>{
+    const user = await axios.post("http://localhost:6001/signin" , {
+      email :email,
+      password : password
+    })
+
+    
+    
   }
 
   return (
@@ -66,7 +76,8 @@ export default function SigninPage() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              <button className="group relative w-full overflow-hidden rounded-lg bg-blue-500 px-4 py-3 font-semibold text-white transition-all duration-300 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700">
+              <button className="group relative w-full overflow-hidden rounded-lg bg-blue-500 px-4 py-3 font-semibold text-white transition-all duration-300 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                onClick={signin}>
                 <span className="relative z-10">Sign in</span>
                 <ArrowRight className="absolute right-4 top-1/2 -translate-y-1/2 transform opacity-0 transition-all duration-300 group-hover:right-3 group-hover:opacity-100" size={20} />
               </button>
